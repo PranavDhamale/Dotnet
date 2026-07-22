@@ -1,0 +1,14 @@
+D:\TAP\DOTNET\FileIo\bin\Debug\net10.0\FileIo.exe
+D:\TAP\DOTNET\FileIo\bin\Debug\net10.0\FileIo.deps.json
+D:\TAP\DOTNET\FileIo\bin\Debug\net10.0\FileIo.runtimeconfig.json
+D:\TAP\DOTNET\FileIo\bin\Debug\net10.0\FileIo.dll
+D:\TAP\DOTNET\FileIo\bin\Debug\net10.0\FileIo.pdb
+D:\TAP\DOTNET\FileIo\obj\Debug\net10.0\FileIo.GeneratedMSBuildEditorConfig.editorconfig
+D:\TAP\DOTNET\FileIo\obj\Debug\net10.0\FileIo.AssemblyInfoInputs.cache
+D:\TAP\DOTNET\FileIo\obj\Debug\net10.0\FileIo.AssemblyInfo.cs
+D:\TAP\DOTNET\FileIo\obj\Debug\net10.0\FileIo.csproj.CoreCompileInputs.cache
+D:\TAP\DOTNET\FileIo\obj\Debug\net10.0\FileIo.dll
+D:\TAP\DOTNET\FileIo\obj\Debug\net10.0\refint\FileIo.dll
+D:\TAP\DOTNET\FileIo\obj\Debug\net10.0\FileIo.pdb
+D:\TAP\DOTNET\FileIo\obj\Debug\net10.0\FileIo.genruntimeconfig.cache
+D:\TAP\DOTNET\FileIo\obj\Debug\net10.0\ref\FileIo.dll
