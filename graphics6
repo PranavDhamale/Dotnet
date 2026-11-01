@@ -1,0 +1,423 @@
+// Write a C/C++/Javaprogramtoimplementtranslation,rotation,shearandscaling transformationsona2DobjectaboutXaxis,Yaxis.
+#include <GL/glut.h>
+#include <cmath>
+const float PI = 3.14159265f;
+// Triangle vertices
+float original[3][2] = {{-50.0f, -40.0f}, {50.0f, -40.0f}, {0.0f, 50.0f}};
+// Transformed vertices
+float transformed[3][2];
+void applyTransformation()
+{
+    // Input parameters
+    float tx = 100.0f, ty = 50.0f;
+    // Translation
+    float angle = 30.0f;
+    // Rotation angle in degrees
+    float sx = 1.5f, sy = 1.2f;
+    // Scaling factors
+    float shx = 0.5f, shy = 0.3f;
+    // Shear factors
+    float rad = angle * PI / 180.0f;
+    float cosA = std::cos(rad);
+    float sinA = std::sin(rad);
+    for (int i = 0; i < 3; i++)
+    {
+        float x = original[i][0];
+        float y = original[i][1];
+        // Scale about X and Y axes
+        x *= sx;
+        y *= sy;
+        // Shear:
+        x ' = x + shx*y, y' = y + shy *x float shearX = x + shx * y;
+        float shearY = y + shy * x;
+        // Rotate about the origin
+        (X and Y axes in the 2D plane) float rotatedX = shearX * cosA - shearY * sinA;
+        float rotatedY = shearX * sinA + shearY * cosA;
+        // Translate
+        transformed[i][0] = rotatedX + tx;
+        transformed[i][1] = rotatedY + ty;
+    }
+}
+void drawObject(float vertices[3][2], float r, float g, float b)
+{
+    glColor3f(r, g, b);
+    glBegin(GL_TRIANGLES);
+    for (int i = 0; i < 3; i++)
+        glVertex2f(vertices[i][0], vertices[i][1]);
+    glEnd();
+}
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    // Draw coordinate axes
+    glColor3f(0.7f, 0.7f, 0.7f);
+    glBegin(GL_LINES);
+    glVertex2f(-300.0f, 0.0f);
+    glVertex2f(300.0f, 0.0f);
+    glVertex2f(0.0f, -250.0f);
+    glVertex2f(0.0f, 250.0f);
+    glEnd();
+    // Original object:
+    blue drawObject(original, 0.0f, 0.0f, 1.0f);
+    // Transformed object: red
+    drawObject(transformed, 1.0f, 0.0f, 0.0f);
+    glFlush();
+}
+void initialize()
+{
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-300.0, 300.0, -250.0, 250.0);
+    applyTransformation();
+}
+int main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(800, 600);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("2D Transformations");
+    initialize();
+    glutDisplayFunc(display);
+    glutMainLoop();
+
+    return 0;
+}
+
+// WriteaC/C++/Javaprogramtoimplementtranslation,rotation,shearandscaling transformationsona2DobjectaboutXaxis,Yaxis.
+#include <GL/glut.h> #include <cmath> const float PI = 3.14159265f;
+// Triangle vertices
+float original[3][2] = {{-50.0f, -40.0f}, {50.0f, -40.0f}, {0.0f, 50.0f}};
+// Transformed vertices
+float transformed[3][2];
+void applyTransformation()
+{
+    // Input parameters
+    float tx = 100.0f, ty = 50.0f;
+    // Translation
+    float angle = 30.0f;
+    // Rotation angle in degrees
+    float sx = 1.5f, sy = 1.2f;
+    // Scaling factors
+    float shx = 0.5f, shy = 0.3f;
+    // Shear factors
+    float rad = angle * PI / 180.0f;
+    float cosA = std::cos(rad);
+    float sinA = std::sin(rad);
+    for (int i = 0; i < 3; i++)
+    {
+        float x = original[i][0];
+        float y = original[i][1];
+        // Scale about X and Y axes
+        x *= sx;
+        y *= sy; // Shear:
+        x ' = x + shx*y, y' = y + shy *x float shearX = x + shx * y;
+        float shearY = y + shy * x;
+        // Rotate about the origin (X and Y axes in the 2D plane)
+        float rotatedX = shearX * cosA - shearY * sinA;
+        float rotatedY = shearX * sinA + shearY * cosA;
+        // Translate
+        transformed[i][0] = rotatedX + tx;
+        transformed[i][1] = rotatedY + ty;
+    }
+}
+void drawObject(float vertices[3][2], float r, float g, float b)
+{
+    glColor3f(r, g, b);
+    glBegin(GL_TRIANGLES);
+    for (int i = 0; i < 3; i++)
+        glVertex2f(vertices[i][0], vertices[i][1]);
+    glEnd();
+}
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    // Draw coordinate axes
+    glColor3f(0.7f, 0.7f, 0.7f);
+    glBegin(GL_LINES);
+    glVertex2f(-300.0f, 0.0f);
+    glVertex2f(300.0f, 0.0f);
+    glVertex2f(0.0f, -250.0f);
+    glVertex2f(0.0f, 250.0f);
+    glEnd();
+    // Original object: blue
+    drawObject(original, 0.0f, 0.0f, 1.0f);
+// Transformed
+object:
+    red
+        drawObject(transformed, 1.0f, 0.0f, 0.0f);
+    glFlush();
+}
+void initialize()
+{
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-300.0, 300.0, -250.0, 250.0);
+    applyTransformation();
+}
+int main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(800, 600);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("2D Transformations");
+    initialize();
+    glutDisplayFunc(display);
+    glutMainLoop();
+}
+return 0;
+// WriteaC/C++/Javaprogramtoimplementtranslation,rotation,shearandscaling transformationsona2DobjectaboutXaxis,Yaxis.
+#include <GL/glut.h> #include <cmath> const float PI = 3.14159265f;
+// Triangle vertices
+float original[3][2] = {{-50.0f, -40.0f}, {50.0f, -40.0f}, {0.0f, 50.0f}};
+// Transformed vertices float transformed[3][2]; void applyTransformation() {
+// Input parameters
+float tx = 100.0f, ty = 50.0f; // Translation
+float angle = 30.0f;
+// Rotation angle in degrees
+float sx = 1.5f, sy = 1.2f;
+// Scaling factors
+float shx = 0.5f, shy = 0.3f;
+// Shear factors
+float rad = angle * PI / 180.0f;
+float cosA = std::cos(rad);
+float sinA = std::sin(rad);
+for (int i = 0; i < 3; i++)
+{
+    float x = original[i][0];
+    float y = original[i][1];
+    // Scale about X and Y axes
+    x *= sx;
+    y *= sy;
+    // Shear:
+    x ' = x + shx*y, y' = y + shy *x float shearX = x + shx * y;
+    float shearY = y + shy * x;
+    // Rotate about the origin (X and Y axes in the 2D plane)
+    float rotatedX = shearX * cosA - shearY * sinA;
+    float rotatedY = shearX * sinA + shearY * cosA;
+    // Translate
+    transformed[i][0] = rotatedX + tx;
+    transformed[i][1] = rotatedY + ty;
+}
+}
+void drawObject(float vertices[3][2], float r, float g, float b)
+{
+    glColor3f(r, g, b);
+    glBegin(GL_TRIANGLES);
+    for (int i = 0; i < 3; i++)
+        glVertex2f(vertices[i][0], vertices[i][1]);
+    glEnd();
+}
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    // Draw coordinate axes
+    glColor3f(0.7f, 0.7f, 0.7f);
+    glBegin(GL_LINES);
+    glVertex2f(-300.0f, 0.0f);
+    glVertex2f(300.0f, 0.0f);
+    glVertex2f(0.0f, -250.0f);
+    glVertex2f(0.0f, 250.0f);
+    glEnd();
+    // Original
+object:
+    blue drawObject(original, 0.0f, 0.0f, 1.0f);
+// Transformed
+object:
+    red drawObject(transformed, 1.0f, 0.0f, 0.0f);
+    glFlush();
+}
+void initialize()
+{
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-300.0, 300.0, -250.0, 250.0);
+    applyTransformation();
+}
+int main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(800, 600);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("2D Transformations");
+    initialize();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}
+// WriteaC/C++/Javaprogramtoimplementtranslation,rotation,shearandscaling transformationsona2DobjectaboutXaxis,Yaxis.
+#include <GL/glut.h> #include <cmath> const float PI = 3.14159265f;
+// Triangle vertices
+float original[3][2] = {{-50.0f, -40.0f}, {50.0f, -40.0f}, {0.0f, 50.0f}};
+// Transformed vertices
+float transformed[3][2];
+void applyTransformation()
+{
+    // Input parameters
+    float tx = 100.0f, ty = 50.0f;
+    // Translation
+    float angle = 30.0f;
+    // Rotation angle in degrees
+    float sx = 1.5f, sy = 1.2f;
+    // Scaling factors
+    float shx = 0.5f, shy = 0.3f;
+    // Shear factors
+    float rad = angle * PI / 180.0f;
+    float cosA = std::cos(rad);
+    float sinA = std::sin(rad);
+    for (int i = 0; i < 3; i++)
+    {
+        float x = original[i][0];
+        float y = original[i][1];
+        // Scale about X and Y axes
+        x *= sx;
+        y *= sy;
+        // Shear:
+        x ' = x + shx*y, y' = y + shy *x float shearX = x + shx * y;
+        float shearY = y + shy * x;
+        // Rotate about the origin (X and Y axes in the 2D plane)
+        float rotatedX = shearX * cosA - shearY * sinA;
+        float rotatedY = shearX * sinA + shearY * cosA;
+        // Translate
+        transformed[i][0] = rotatedX + tx;
+        transformed[i][1] = rotatedY + ty;
+    }
+}
+void drawObject(float vertices[3][2], float r, float g, float b)
+{
+    glColor3f(r, g, b);
+    glBegin(GL_TRIANGLES);
+    for (int i = 0; i < 3; i++)
+        glVertex2f(vertices[i][0], vertices[i][1]);
+    glEnd();
+}
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    // Draw coordinate axes
+    glColor3f(0.7f, 0.7f, 0.7f);
+    glBegin(GL_LINES);
+    glVertex2f(-300.0f, 0.0f);
+    glVertex2f(300.0f, 0.0f);
+    glVertex2f(0.0f, -250.0f);
+    glVertex2f(0.0f, 250.0f);
+    glEnd();
+// Original
+object:
+    blue drawObject(original, 0.0f, 0.0f, 1.0f);
+// Transformed
+object:
+    red drawObject(transformed, 1.0f, 0.0f, 0.0f);
+    glFlush();
+}
+void initialize()
+{
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-300.0, 300.0, -250.0, 250.0);
+    applyTransformation();
+}
+int main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(800, 600);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("2D Transformations");
+    initialize();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}
+// WriteaC/C++/Javaprogramtoimplementtranslation,rotation,shearandscaling transformationsona2DobjectaboutXaxis,Yaxis.
+#include <GL/glut.h> #include <cmath> const float PI = 3.14159265f;
+// Triangle vertices
+float original[3][2] = {{-50.0f, -40.0f}, {50.0f, -40.0f}, {0.0f, 50.0f}};
+// Transformed vertices
+float transformed[3][2];
+void applyTransformation()
+{
+    // Input parameters
+    float tx = 100.0f, ty = 50.0f;
+    // Translation
+    float angle = 30.0f;
+    // Rotation angle in degrees
+    float sx = 1.5f, sy = 1.2f;
+    // Scaling factors
+    float shx = 0.5f, shy = 0.3f;
+    // Shear factors
+    float rad = angle * PI / 180.0f;
+    float cosA = std::cos(rad);
+    float sinA = std::sin(rad);
+    for (int i = 0; i < 3; i++)
+    {
+        float x = original[i][0];
+        float y = original[i][1];
+        // Scale about X and Y axes
+        x *= sx;
+        y *= sy;
+        // Shear:
+        x ' = x + shx*y, y' = y + shy *x float shearX = x + shx * y;
+        float shearY = y + shy * x;
+        // Rotate about the origin (X and Y axes in the 2D plane)
+        float rotatedX = shearX * cosA - shearY * sinA;
+        float rotatedY = shearX * sinA + shearY * cosA;
+        // Translate
+        transformed[i][0] = rotatedX + tx;
+        transformed[i][1] = rotatedY + ty;
+    }
+}
+void drawObject(float vertices[3][2], float r, float g, float b)
+{
+    glColor3f(r, g, b);
+    glBegin(GL_TRIANGLES);
+    for (int i = 0; i < 3; i++)
+        glVertex2f(vertices[i][0], vertices[i][1]);
+    glEnd();
+}
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    // Draw coordinate axes
+    glColor3f(0.7f, 0.7f, 0.7f);
+    glBegin(GL_LINES);
+    glVertex2f(-300.0f, 0.0f);
+    glVertex2f(300.0f, 0.0f);
+    glVertex2f(0.0f, -250.0f);
+    glVertex2f(0.0f, 250.0f);
+    glEnd();
+// Original
+object:
+    blue drawObject(original, 0.0f, 0.0f, 1.0f);
+// Transformed
+object:
+    red drawObject(transformed, 1.0f, 0.0f, 0.0f);
+    glFlush();
+}
+void initialize()
+{
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-300.0, 300.0, -250.0, 250.0);
+    applyTransformation();
+}
+int main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(800, 600);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("2D Transformations");
+    initialize();
+    glutDisplayFunc(display);
+    glutMainLoop();
+
+    return 0;
+}

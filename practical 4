@@ -1,0 +1,142 @@
+impot.java.util.Scanner;
+ class ATM
+
+  {
+     private double balance;   
+
+   public ATM(double initialBalance)  
+      {  
+        this.balance = initialBalance;      
+   } 
+     public void checkBalance()  
+
+  {   
+    System.out.println("current balance: Rs."+balance);
+   }   
+
+  public void deposit(double amount)
+  {    
+  if(amount <= 0)
+    {  
+   throw new IllegalArgumentException("withdrawl amount must be positive."); 
+   }  
+
+ balance += amount;  
+  System.out.println("succesfully deposited: Rs"+amount); 
+   }  
+
+ public void withdraw(double amount)
+ {  
+     if(amount<=0)
+ {        
+  throw new IllegalArgumentException("withdraw amount must be positive.");
+ } 
+
+ if(amount>balance)
+ {  
+  throw new ArithmeticException("insufficient funds!");   
+ }    
+ balance -= amount;  
+
+ System.out.println("Succesfully withdraw:Rs."+amount);  
+
+      }  
+
+  }   
+
+ class ATMSimulation
+  {      
+ public static void main(String[]args)
+{     
+ Scanner sc = new Scanner(System.in);     
+
+  ATM atm = new ATM(5000); 
+
+   boolean running = true; 
+
+     while(running)
+     {      
+      try 
+  {    
+   System.out.println("\n=========ATM MENU========");  
+
+   System.out.println("1. check balance"); 
+
+   System.out.println("2. deposit money"); 
+
+  System.out.println("3. withdraw money");
+  
+   System.out.println("4. exit");        
+       
+   System.out.println("Enter your choice:");  
+
+  int choice = sc.nextInt();         
+
+  switch(choice)
+       {               
+                             
+        case 1:                    
+   atm.checkBalance();                   
+    break;           
+
+ case 2:                    
+  System.out.println("enter amount to deposit:");         
+
+ double deposit= sc.nextDouble();  
+
+   atm.deposit(deposit);       
+
+  break;
+
+  case 3:                   
+  System.out.println("enetr amount to withdraw:"); 
+
+ double withdraw= sc.nextDouble(); 
+                  
+     atm.withdraw(withdraw)      
+
+ break;              
+
+  case 4:                   
+
+  running=false;   
+
+   System.out.println("thank for using atm.");          
+
+  break;   
+
+ default:   
+
+   }   
+
+  }     
+
+ catch(IllegalArgumentException e)
+  {   
+
+ System.out.println("error:"+e.getMessage());               
+    }
+                    
+   catch(ArithmeticException e)
+ {                 
+  System.out.println("error:"+e.getMessage());               
+ 
+ }                 
+    catch(Exception e)
+
+    {                  
+         System.out.println("invalid inputs please enter correct values");                                      
+         sc.nextLine();                   
+        
+         }
+
+         finally
+         {                   
+             System.out.println("operation completed.\n");                    
+             
+             }  
+
+             }                    
+             sc.close();                    
+             }                    
+             } 

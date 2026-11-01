@@ -1,0 +1,134 @@
+#include <GL/glut.h>
+#include <iostream>
+const double X_MIN = 100.0;
+const double Y_MIN = 100.0;
+const double X_MAX = 500.0;
+const double Y_MAX = 400.0;
+enum
+{
+    INSIDE = 0,
+    LEFT = 1,
+    RIGHT = 2,
+    BOTTOM = 4,
+    TOP = 8
+};
+int computeOutCode(double x, double y)
+{
+    int code = INSIDE;
+    if (x < X_MIN)
+        code |= LEFT;
+    else if (x > X_MAX)
+        code |= RIGHT;
+    if (y < Y_MIN)
+        code |= BOTTOM;
+    else if (y > Y_MAX)
+        code |= TOP;
+    return code;
+}
+bool cohenSutherlandClip(double &x1, double &y1, double &x2, double &y2)
+{
+    int code1 = computeOutCode(x1, y1);
+    int code2 = computeOutCode(x2, y2);
+    while (true)
+    {
+        if ((code1 | code2) == 0)
+        {
+            // Both endpoints are inside.
+            return true;
+        }
+        if ((code1 & code2) != 0)
+        {
+            // Both endpoints lie outside on the same side.
+            return false;
+        }
+        int outsideCode = code1 ? code1 : code2;
+        double x = 0.0, y = 0.0;
+        if (outsideCode & TOP)
+        {
+            x = x1 + (x2 - x1) * (Y_MAX - y1) / (y2 - y1);
+            y = Y_MAX;
+        }
+        else if (outsideCode & BOTTOM)
+        {
+            x = x1 + (x2 - x1) * (Y_MIN - y1) / (y2 - y1);
+            y = Y_MIN;
+        }
+        else if (outsideCode & RIGHT)
+        {
+            y = y1 + (y2 - y1) * (X_MAX - x1) / (x2 - x1);
+            x = X_MAX;
+        }
+        else
+        { // LEFT
+            y = y1 + (y2 - y1) * (X_MIN - x1) / (x2 - x1);
+            x = X_MIN;
+        }
+        if (outsideCode == code1)
+        {
+            x1 = x;
+            y1 = y;
+            code1 = computeOutCode(x1, y1);
+        }
+        else
+        {
+            x2 = x;
+            y2 = y;
+            code2 = computeOutCode(x2, y2);
+        }
+    }
+}
+void drawLine(double x1, double y1, double x2, double y2)
+{
+    glBegin(GL_LINES);
+    glVertex2d(x1, y1);
+    glVertex2d(x2, y2);
+    glEnd();
+}
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    // Draw the clipping rectangle.
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2d(X_MIN, Y_MIN);
+    glVertex2d(X_MAX, Y_MIN);
+    glVertex2d(X_MAX, Y_MAX);
+    glVertex2d(X_MIN, Y_MAX);
+    glEnd();
+    // Example line segment.
+    double x1 = 50.0, y1 = 50.0;
+    double x2 = 550.0, y2 = 450.0;
+    // Draw the original line in gray.
+    glColor3f(0.6f, 0.6f, 0.6f);
+    glLineWidth(1.0f);
+    drawLine(x1, y1, x2, y2);
+    // Clip and draw the visible portion in red.
+    if (cohenSutherlandClip(x1, y1, x2, y2))
+    {
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glLineWidth(3.0f);
+        drawLine(x1, y1, x2, y2);
+    }
+    glFlush();
+}
+void initialize()
+{
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    // Use a 600 × 500 coordinate system with origin at the bottom-left.
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0, 600.0, 0.0, 500.0);
+}
+int main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(600, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Cohen-Sutherland Line Clipping");
+    initialize();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}

@@ -1,0 +1,277 @@
+#include <GL/glut.h>
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <algorithm>
+#include <cmath> using namespace std;  const int WIDTH = 800;
+const int HEIGHT = 600;
+struct Point
+{
+    int x, y;
+};
+struct Color
+{
+    unsigned char r, g, b;
+};
+vector<Point> polygon = {{150, 150}, {650, 150}, {650, 500}, {450, 350}, {300, 500}, {150, 500}};
+Color WHITE = {255, 255, 255};
+Color BLACK = {0, 0, 0};
+Color fillColor = {255, 0, 0};
+vector<unsigned char> pixels(WIDTH * HEIGHT * 3);
+int algorithmChoice;
+int colorChoice;
+// Get the index of a pixel in the image buffer
+int getIndex(int x, int y) { return (y * WIDTH + x) * 3; }
+// Compare two colors
+bool sameColor(Color a, Color b) { return a.r == b.r && a.g == b.g && a.b == b.b; }
+// Set the color of a pixel
+void putPixel(int x, int y, Color c)
+{
+    if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
+        return;
+    int i = getIndex(x, y);
+    pixels[i] = c.r;
+    pixels[i + 1] = c.g;
+    pixels[i + 2] = c.b;
+}
+// Get the color of a pixel
+Color getPixel(int x, int y)
+{
+    int i = getIndex(x, y);
+    return {pixels[i], pixels[i + 1], pixels[i + 2]};
+}
+ // Clear the image
+void clearScreen()
+{
+    for (int y = 0; y < HEIGHT; y++)
+    {
+        for (int x = 0; x < WIDTH; x++)
+        {
+            putPixel(x, y, WHITE);
+        }
+    }
+} 
+// Draw a line using Bresenham's line algorithm
+void drawLine(Point p1, Point p2, Color c)
+{
+    int x1 = p1.x;
+    int y1 = p1.y;
+    int x2 = p2.x;
+    int y2 = p2.y;
+    int dx = abs(x2 - x1);
+    int dy = abs(y2 - y1);
+    int sx = (x1 < x2) ? 1 : -1;
+    int sy = (y1 < y2) ? 1 : -1;
+    int err = dx - dy;
+    while (true)
+    {
+        putPixel(x1, y1, c);
+        if (x1 == x2 && y1 == y2)
+            break;
+        int e2 = 2 * err;
+        if (e2 > -dy)
+        {
+            err -= dy;
+            x1 += sx;
+        }
+        if (e2 < dx)
+        {
+            err += dx;
+            y1 += sy;
+        }
+    }
+} 
+// Draw the polygon boundary
+void drawBoundary()
+{
+    int n = polygon.size();
+    for (int i = 0; i < n; i++)
+    {
+        drawLine(polygon[i], polygon[(i + 1) % n], BLACK);
+    }
+}
+ // 1. Scan-Line Fill Algorithm
+void scanLineFill()
+{
+    int n = polygon.size();
+    int ymin = HEIGHT;
+    int ymax = 0;
+    for (Point p : polygon)
+    {
+        ymin = min(ymin, p.y);
+        ymax = max(ymax, p.y);
+    } 
+    // Process each horizontal scan line
+    for (int y = ymin; y <= ymax; y++)
+    {
+        vector<double> intersections;
+        for (int i = 0; i < n; i++)
+        {
+            Point p1 = polygon[i];
+            Point p2 = polygon[(i + 1) % n];
+            // Ignore horizontal edges and use a
+            if (p1.y == p2.y)
+                continue;
+            int lowY = min(p1.y, p2.y);
+            int highY = max(p1.y, p2.y);
+            if (y >= lowY && y < highY)
+            {
+                double x = p1.x + (double)(y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y);
+                intersections.push_back(x);
+            }
+        }
+        sort(intersections.begin(), intersections.end()); 
+        // Fill between pairs of intersections
+        for (int i = 0; i + 1 < (int)intersections.size(); i += 2)
+        {
+            int x1 = (int)ceil(intersections[i]);
+            int x2 = (int)floor(intersections[i + 1]);
+            for (int x = x1; x <= x2; x++)
+            {
+                putPixel(x, y, fillColor);
+            }
+        }
+    }
+     // Redraw boundary to keep it visible
+    drawBoundary();
+}
+// 2. Boundary Fill Algorithm
+// Fill until the boundary color is reached
+void boundaryFill(int sx, int sy)
+{
+    stack<Point> s;
+    s.push({sx, sy});
+    while (!s.empty())
+    {
+        Point p = s.top();
+        s.pop();
+        if (p.x < 0 || p.x >= WIDTH || p.y < 0 || p.y >= HEIGHT)
+            continue;
+        Color current = getPixel(p.x, p.y);
+        if (sameColor(current, BLACK) || sameColor(current, fillColor))
+            continue;
+        putPixel(p.x, p.y, fillColor);
+        s.push({p.x + 1, p.y});
+        s.push({p.x - 1, p.y});
+        s.push({p.x, p.y + 1});
+        s.push({p.x, p.y - 1});
+    }
+} 
+// 3. Seed Fill / Flood Fill Algorithm 
+// Replace connected white pixels with fill color
+void seedFill(int sx, int sy)
+{
+    stack<Point> s;
+    s.push({sx, sy});
+    while (!s.empty())
+    {
+        Point p = s.top();
+        s.pop();
+        if (p.x < 0 || p.x >= WIDTH || p.y < 0 || p.y >= HEIGHT)
+            continue;
+        Color current = getPixel(p.x, p.y); // Only replace the original background color
+        if (!sameColor(current, WHITE))
+            continue;
+        putPixel(p.x, p.y, fillColor);
+        s.push({p.x + 1, p.y});
+        s.push({p.x - 1, p.y});
+        s.push({p.x, p.y + 1});
+        s.push({p.x, p.y - 1});
+    }
+} 
+// Select the filling color
+void selectColor()
+{
+    cout << "\nSelect Filling Color:\n";
+    cout << "1. Red\n";
+    cout << "2. Green\n";
+    cout << "3. Blue\n";
+    cout << "4. Yellow\n";
+    cout << "5. Magenta\n";
+    cout << "Enter your choice: ";
+    cin >> colorChoice;
+    switch (colorChoice)
+    {
+    case 1:
+        fillColor = {255, 0, 0};
+        break;
+    case 2:
+        fillColor = {0, 255, 0};
+        break;
+    case 3:
+        fillColor = {0, 0, 255};
+        break;
+    case 4:
+        fillColor = {255, 255, 0};
+        break;
+    case 5:
+        fillColor = {255, 0, 255};
+        break;
+    default:
+        cout << "Invalid color! Red selected.\n";
+        fillColor = {255, 0, 0};
+    }
+} 
+// OpenGL display function
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glRasterPos2i(0, 0);
+    glDrawPixels(WIDTH, HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());
+    glFlush();
+} 
+// Initialize OpenGL
+void init()
+{
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, WIDTH, 0, HEIGHT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+} // Main function
+int main(int argc, char **argv)
+{
+    cout << "====================================\n";
+    cout << "  CONCAVE POLYGON FILLING PROGRAM\n";
+    cout << "====================================\n";
+    cout << "\nSelect Filling Algorithm:\n";
+    cout << "1. Scan-Line Fill Algorithm\n";
+    cout << "2. Boundary Fill Algorithm\n";
+    cout << "3. Seed Fill / Flood Fill Algorithm\n";
+    cout << "Enter your choice: ";
+    cin >> algorithmChoice;
+    if (algorithmChoice < 1 || algorithmChoice > 3)
+    {
+        cout << "Invalid algorithm choice!\n";
+        return 0;
+    }
+    selectColor(); 
+     // Initialize white background
+    clearScreen(); 
+     // Draw polygon boundary in black
+    drawBoundary(); 
+    // Fill using selected algorithm
+    if (algorithmChoice == 1)
+    {
+        scanLineFill();
+    }
+    else if (algorithmChoice == 2)
+    {
+        boundaryFill(250, 300);
+    }
+    else if (algorithmChoice == 3)
+    {
+        seedFill(250, 300);
+    } // Start  OpenGL
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(WIDTH, HEIGHT);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("YOGITA Concave Polygon Filling - OpenGL");
+    init();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}
