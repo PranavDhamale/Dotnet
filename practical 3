@@ -1,0 +1,61 @@
+// First Interface
+ interface Payable 
+ { 
+    void calculateSalary();
+     }
+
+  // Second Interface 
+  interface Workable
+   {
+     void work();
+      } 
+
+  // Class implementing multiple interfaces 
+  class Employee implements Payable, Workable 
+  { 
+    private String name; private double baseSalary;
+  
+   // Constructor
+    public Employee(String name, double baseSalary) 
+    { 
+        this.name = name; this.baseSalary = baseSalary;
+        
+         }
+     @Override public void calculateSalary()
+      { 
+        double totalSalary = baseSalary + 2000;
+      
+       // Bonus added 
+       System.out.println(name + "'s Salary: " + totalSalary); 
+      
+       }
+
+        @Override public void work() 
+        {
+             System.out.println(name + " is working on project tasks.");
+        
+         }
+       
+        }
+
+         // Main class 
+         public class MultipleInheritanceEmployee 
+         {
+             public static void main(String[] args)
+         { 
+             Employee emp = new Employee("Rahul", 25000);
+          
+          // Normal access
+           emp.calculateSalary(); emp.work(); 
+           
+           // Polymorphism using interface references 
+           Payable p = emp; Workable w = emp; 
+           p.calculateSalary();
+
+         Calls Employee's implementation w.work(); 
+            
+             Calls Employee's implementation
+             
+              }
+
+               } 

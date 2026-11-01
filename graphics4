@@ -1,0 +1,141 @@
+#include <GL/glut.h>
+#include <iostream>
+#include <cmath>
+using namespace std;
+struct Point
+{
+    float x, y;
+};
+Point triangle[3] = {{0.0f, 1.0f}, {-0.866f, -0.5f}, {0.866f, -0.5f}};
+Point rhombus[4] = {{0.0f, 0.8f}, {0.8f, 0.0f}, {0.0f, -0.8f}, {-0.8f, 0.0f}};
+Point result[4];
+int shape = 1;
+// 1 = Triangle, 2 = Rhombus
+int operation = 0;
+// 0 = Original
+float tx = 0.5f, ty = 0.3f;
+float sx = 1.5f, sy = 1.5f;
+float angle = 45.0f;
+float shx = 0.5f, shy = 0.0f;
+void transform(Point p[], int n)
+{
+    float rad = angle * 3.14159265f / 180.0f;
+    for (int i = 0; i < n; i++)
+    {
+        float x = p[i].x;
+        float y = p[i].y;
+        switch (operation)
+        {
+        case 1:
+            // Translation
+            result[i] = {x + tx, y + ty};
+            break;
+        case 2:
+            // Scaling
+            result[i] = {x * sx, y * sy};
+            break;
+        case 3:
+            // Rotation about origin
+            result[i] = {x * cos(rad) - y * sin(rad), x * sin(rad) + y * cos(rad)};
+            break;
+        case 4:
+            // X and Y shearing
+            result[i] = {x + shx * y, y + shy * x};
+            break;
+        default:
+            result[i] = {x, y};
+        }
+    }
+}
+void drawShape(Point p[], int n, float r, float g, float b)
+{
+    glColor3f(r, g, b);
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < n; i++)
+        glVertex2f(p[i].x, p[i].y);
+    glEnd();
+}
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    // Draw coordinate axes
+    glColor3f(0.5f, 0.5f, 0.5f);
+    glBegin(GL_LINES);
+    glVertex2f(-3.0f, 0.0f);
+    glVertex2f(3.0f, 0.0f);
+    glVertex2f(0.0f, -3.0f);
+    glVertex2f(0.0f, 3.0f);
+    glEnd();
+    int n = (shape == 1) ? 3 : 4;
+    Point *p = (shape == 1) ? triangle : rhombus;
+    // Original shape in white
+    drawShape(p, n, 1.0f, 1.0f, 1.0f);
+    // Transformed shape in green
+    transform(p, n);
+    drawShape(result, n, 0.0f, 1.0f, 0.0f);
+    glFlush();
+}
+void menu()
+{
+    cout << "\n--- PRACTICAL 07: 2D TRANSFORMATIONS ---\n";
+    cout << "1. Select Equilateral Triangle\n";
+    cout << "2. Select Rhombus\n";
+    cout << "3. Translation\n";
+    cout << "4. Scaling\n";
+    cout << "5. Rotation\n";
+    cout << "6. Shearing\n";
+    cout << "0. Original Shape\n";
+    cout << "7. Exit\n";
+    cout << "Enter choice: ";
+}
+void keyboard(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+    case '1':
+        shape = 1;
+        break;
+    case '2':
+        shape = 2;
+        break;
+    case '3':
+        operation = 1;
+        break;
+    case '4':
+        operation = 2;
+        break;
+    case '5':
+        operation = 3;
+        break;
+    case '6':
+        operation = 4;
+        break;
+    case '0':
+        operation = 0;
+        break;
+    case '7':
+        exit(0);
+    default:
+        return;
+    }
+    glutPostRedisplay();
+}
+int main(int argc, char **argv)
+{
+    cout << "Use the keyboard keys in the graphics window.\n";
+    menu();
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(700, 600);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Practical 07 - 2D Transformations");
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-3.0, 3.0, -3.0, 3.0);
+    glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard);
+    glutMainLoop();
+    return 0;
+}

@@ -1,0 +1,47 @@
+class Animal
+ {
+     string name;
+
+      Animal(string name) 
+      { 
+        this.name=name; 
+        
+        } 
+
+        public void eat() 
+        { 
+            system.out.println(name+"is eating");
+             
+             } 
+
+             public void sleep() 
+             { 
+                system.out.println(name+"is sleeping"); 
+                
+                }
+
+                } 
+
+                class Dog extends Animal 
+                {
+                     Dog(string name)
+                      {
+                         super(name);
+                          } 
+                      public void bark()
+                       {
+                         system.out.println(name+"is barking");
+                        }
+                        public void showActions()
+                         {
+                             eat(); sleep(); bark(); 
+                        }
+                         }
+
+                          public class SingalInheritanceDemo
+                          { 
+                            public static void main (String[]args)
+                           {
+                             Dog dog = new Dog("Buddy"); 
+                           }
+  } 
